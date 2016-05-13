@@ -3,6 +3,7 @@ package co.fusionx.relay.internal.parser.main.command;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import co.fusionx.relay.misc.RelayConfigurationProvider;
 import com.google.common.base.Optional;
 
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import co.fusionx.relay.internal.parser.main.MentionParser;
 import co.fusionx.relay.util.LogUtils;
 import co.fusionx.relay.util.ParseUtils;
 import co.fusionx.relay.util.Utils;
+
+import static co.fusionx.relay.misc.RelayConfigurationProvider.getPreferences;
 
 public class PrivmsgParser extends CommandParser {
 
@@ -72,7 +75,8 @@ public class PrivmsgParser extends CommandParser {
         Optionals.ifPresent(optChannel, channel -> {
             final String ownNick = mServer.getUser().getNick().getNickAsString();
             final boolean mention = !TextUtils.equals(sendingNick, ownNick)
-                    ? MentionParser.onMentionableCommand(message, ownNick) : false;
+                    && MentionParser.onMentionableCommand(
+                            message, ownNick, getPreferences().getHighlightWords());
 
             final Optional<RelayChannelUser> optUser = mUserChannelInterface.getUser(sendingNick);
             final ChannelEvent event;

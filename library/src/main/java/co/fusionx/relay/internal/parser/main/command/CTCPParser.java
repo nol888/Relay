@@ -26,6 +26,8 @@ import co.fusionx.relay.util.LogUtils;
 import co.fusionx.relay.util.ParseUtils;
 import co.fusionx.relay.util.Utils;
 
+import static co.fusionx.relay.misc.RelayConfigurationProvider.getPreferences;
+
 public class CTCPParser {
 
     private final RelayServer mServer;
@@ -111,7 +113,8 @@ public class CTCPParser {
             final Optional<RelayChannelUser> optUser = mUserChannelInterface.getUser(sendingNick);
             final String ownNick = mServer.getUser().getNick().getNickAsString();
             final boolean mention = !TextUtils.equals(sendingNick, ownNick)
-                    ? MentionParser.onMentionableCommand(action, ownNick) : false;
+                    && MentionParser.onMentionableCommand(
+                            action, ownNick, getPreferences().getHighlightWords());
 
             final ChannelEvent event;
             if (optUser.isPresent()) {

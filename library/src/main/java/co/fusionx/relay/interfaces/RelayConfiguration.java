@@ -10,6 +10,8 @@ public interface RelayConfiguration {
 
     public String getQuitReason();
 
+    String[] getHighlightWords();
+
     public boolean isSelfEventHidden();
 
     public boolean isMOTDShown();
