@@ -43,6 +43,9 @@ public abstract class CodeParser {
         parserMap.put(ServerReplyCodes.ERR_NOSUCHNICK, errorParser);
         parserMap.put(ServerReplyCodes.ERR_NICKNAMEINUSE, errorParser);
 
+        final ChannelModesParser channelModesParser = new ChannelModesParser(server);
+        parserMap.put(ServerReplyCodes.RPL_CHANNELMODEIS, channelModesParser);
+
         return parserMap;
     }
 

@@ -15,7 +15,7 @@ import co.fusionx.relay.internal.base.RelayServer;
 
 class JoinParser extends CommandParser {
 
-    public JoinParser(final RelayServer server) {
+    JoinParser(final RelayServer server) {
         super(server);
     }
 
@@ -60,5 +60,8 @@ class JoinParser extends CommandParser {
             final ServerEvent joinEvent = new JoinEvent(channel);
             mServer.postAndStoreEvent(joinEvent);
         }
+
+        // Fetch channel modes
+        mServer.sendRawLine(String.format("MODE %s", channelName));
     }
 }

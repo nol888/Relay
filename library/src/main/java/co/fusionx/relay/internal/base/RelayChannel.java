@@ -1,19 +1,9 @@
 package co.fusionx.relay.internal.base;
 
 import android.util.Pair;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableList;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
 import co.fusionx.relay.base.Channel;
 import co.fusionx.relay.base.FormatSpanInfo;
 import co.fusionx.relay.base.Server;
-import co.fusionx.relay.base.UserChannelInterface;
 import co.fusionx.relay.event.channel.ChannelActionEvent;
 import co.fusionx.relay.event.channel.ChannelEvent;
 import co.fusionx.relay.event.channel.ChannelMessageEvent;
@@ -21,6 +11,13 @@ import co.fusionx.relay.internal.sender.BaseSender;
 import co.fusionx.relay.internal.sender.RelayChannelSender;
 import co.fusionx.relay.sender.ChannelSender;
 import co.fusionx.relay.util.Utils;
+import com.google.common.base.Optional;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 import static co.fusionx.relay.misc.RelayConfigurationProvider.getPreferences;
 
@@ -38,6 +35,8 @@ public class RelayChannel extends RelayAbstractConversation<ChannelEvent> implem
 
     private final ChannelSender mChannelSender;
 
+    private Optional<String> mChannelKey;
+
     RelayChannel(final Server server, final RelayMainUser user, final BaseSender baseSender,
             final String channelName) {
         super(server);
@@ -45,6 +44,7 @@ public class RelayChannel extends RelayAbstractConversation<ChannelEvent> implem
         mUser = user;
         mChannelSender = new RelayChannelSender(this, baseSender);
         mChannelName = channelName;
+        mChannelKey = Optional.absent();
 
         mUsers = new HashSet<>();
 
@@ -79,6 +79,16 @@ public class RelayChannel extends RelayAbstractConversation<ChannelEvent> implem
     @Override
     public String getName() {
         return mChannelName;
+    }
+
+    /**
+     * Gets the optionally present channel key.
+     *
+     * @return the channel's key, if one is set
+     */
+    @Override
+    public Optional<String> getChannelKey() {
+        return mChannelKey;
     }
 
     /**
@@ -158,6 +168,25 @@ public class RelayChannel extends RelayAbstractConversation<ChannelEvent> implem
     @Override
     public void sendUserMode(final String userNick, final String mode) {
         mChannelSender.sendUserMode(userNick, mode);
+    }
+
+    @Override
+    public void setChannelModes(final String modeString) {
+        mChannelKey = Optional.absent();
+
+        String[] parsedArray = modeString.split(" ");
+        int keyIndex = 1;
+
+        for (char c : parsedArray[0].toCharArray()) {
+            switch (c) {
+                case 'l':
+                    keyIndex++;
+                    break;
+                case 'k':
+                    mChannelKey = Optional.of(parsedArray[keyIndex]);
+                    break;
+            }
+        }
     }
 
     // Helpers

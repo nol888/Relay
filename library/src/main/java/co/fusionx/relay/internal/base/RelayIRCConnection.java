@@ -222,7 +222,11 @@ public class RelayIRCConnection {
             }
         } else {
             for (final RelayChannel channel : channels) {
-                mServer.sendJoin(channel.getName());
+                mServer.sendJoin(String.format(
+                        "%s%s%s",
+                        channel.getName(),
+                        channel.getChannelKey().isPresent() ? " " : "",
+                        channel.getChannelKey().isPresent() ? channel.getChannelKey().get() : ""));
             }
         }
 

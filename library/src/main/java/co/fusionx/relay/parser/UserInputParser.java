@@ -125,6 +125,9 @@ public class UserInputParser {
                     final String channelName = parsedArray.get(0);
                     server.sendJoin(channelName);
                     return;
+                } else if (arrayLength == 2) {
+                    server.sendJoin(String.format("%s %s", parsedArray.get(0), parsedArray.get(1)));
+                    return;
                 }
                 break;
             case "/msg":
