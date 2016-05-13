@@ -101,6 +101,16 @@ public class RelayConnectionManager implements ConnectionManager {
         mConnectionMap.clear();
     }
 
+    @Override
+    public void handleConnectivityChange() {
+        for (final RelayIRCConnection connection : mConnectionMap.values()) {
+            if (connection.getServer() != null
+                    && connection.getServer().getStatus() == ConnectionStatus.CONNECTED) {
+                connection.handleConnectivityChange();
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

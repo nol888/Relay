@@ -41,6 +41,11 @@ public interface ConnectionManager {
     void requestDisconnectAll();
 
     /**
+     * Force a reconnect for all connected servers to handle switches from Wifi<->Cellular.
+     */
+    void handleConnectivityChange();
+
+    /**
      * Returns the server if it is already connected
      *
      * This is almost always NOT the method you want to call.

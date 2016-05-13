@@ -1,5 +1,6 @@
 package co.fusionx.relay.internal.base;
 
+import android.os.AsyncTask;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 
@@ -58,6 +59,7 @@ public class RelayIRCConnection {
     private int mReconnectAttempts;
 
     private boolean mStopped;
+    private boolean mConnectivityChanged;
 
     @Inject
     RelayIRCConnection(final ServerConfiguration serverConfiguration,
@@ -82,6 +84,18 @@ public class RelayIRCConnection {
         } else if (mConnectionThread.isAlive()) {
             mConnectionThread.interrupt();
         }
+    }
+
+    void handleConnectivityChange() {
+        mConnectivityChanged = true;
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                closeSocket();
+                return null;
+            }
+        }.execute();
     }
 
     private void connectToServerSilently() {
@@ -140,6 +154,9 @@ public class RelayIRCConnection {
 
         if (mStopped) {
             onStopped();
+        } else if (mConnectivityChanged) {
+            mConnectivityChanged = false;
+            onDisconnected("Reconnecting due to connectivity change", true);
         } else {
             onDisconnected(disconnectMessage, isReconnectNeeded());
         }
