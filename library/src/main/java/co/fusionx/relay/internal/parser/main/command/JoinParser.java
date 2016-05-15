@@ -59,9 +59,9 @@ class JoinParser extends CommandParser {
             // Also post a server event if the user who joined was the app user
             final ServerEvent joinEvent = new JoinEvent(channel);
             mServer.postAndStoreEvent(joinEvent);
-        }
 
-        // Fetch channel modes
-        mServer.sendRawLine(String.format("MODE %s", channelName));
+            // Fetch channel modes
+            mServer.sendRawLine(String.format("MODE %s", channelName));
+        }
     }
 }
