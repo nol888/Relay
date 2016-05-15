@@ -6,9 +6,11 @@ import android.util.SparseArray;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 
+import android.util.StringBuilderPrinter;
 import co.fusionx.relay.event.server.GenericServerEvent;
 import co.fusionx.relay.event.server.WhoisEvent;
 import co.fusionx.relay.internal.base.RelayServer;
@@ -49,6 +51,17 @@ public class ServerLineParser {
      */
     public void parseMain(final BufferedReader reader)
             throws IOException {
+        while (true) {
+            try {
+                parseLoop(reader);
+                return;
+            } catch (SocketTimeoutException ex) {
+                mInternalSender.pingServer("Relay");
+            }
+        }
+    }
+
+    private void parseLoop(BufferedReader reader) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
             final boolean quit = parseLine(line);
@@ -123,8 +136,11 @@ public class ServerLineParser {
         parsedArray.remove(0); // Remove the target of the reply - ourselves
 
         if (ServerReplyCodes.genericCodes.contains(code)) {
-            final String message = parsedArray.get(0);
-            mServer.postAndStoreEvent(new GenericServerEvent(mServer, message));
+            final StringBuilder messageBuilder = new StringBuilder();
+            for (String s : parsedArray) {
+                messageBuilder.append(s).append(' ');
+            }
+            mServer.postAndStoreEvent(new GenericServerEvent(mServer, messageBuilder.toString().trim()));
         } else if (ServerReplyCodes.whoisCodes.contains(code)) {
             final String response = IRCUtils.concatenateStringList(parsedArray);
             mServer.postAndStoreEvent(new WhoisEvent(mServer, response));

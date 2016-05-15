@@ -51,6 +51,7 @@ public class SocketUtils {
         }
 
         socket.setKeepAlive(true);
+        socket.setSoTimeout(6 * 60 * 1000);
         socket.connect(address, 5000);
 
         return socket;

@@ -3,6 +3,7 @@ package co.fusionx.relay.internal.sender;
 import co.fusionx.relay.internal.packet.server.NickServPasswordPacket;
 import co.fusionx.relay.internal.packet.server.QuitPacket;
 import co.fusionx.relay.internal.packet.server.UserPacket;
+import co.fusionx.relay.internal.packet.server.internal.PingPacket;
 import co.fusionx.relay.internal.packet.server.internal.PongPacket;
 import co.fusionx.relay.internal.packet.server.internal.ServerPasswordPacket;
 
@@ -12,6 +13,10 @@ public class RelayInternalSender {
 
     public RelayInternalSender(final BaseSender relayBaseSender) {
         mRelayBaseSender = relayBaseSender;
+    }
+
+    public void pingServer(final String token) {
+        mRelayBaseSender.sendPacket(new PingPacket(token));
     }
 
     public void pongServer(final String source) {
